@@ -7,13 +7,20 @@ use Illuminate\Http\Request;
 
 class MenuController extends Controller
 {
-    public function index()
-    {
-        $menus = auth()->user()->menus()->get();
-        return view('menus.index', compact('menus'));
-    }
+    public function index(Request $request)
+	{
+		$query = Menu::where('user_id', auth()->id());
 
-    public function create()
+		if ($request->filled('search')) {
+			$query->where('title', 'like', '%' . $request->search . '%');
+		}
+
+		$menus = $query->orderBy('created_at', 'desc')->paginate(10);
+
+		return view('menus.index', compact('menus'));
+	}
+	
+	public function create()
     {
         return view('menus.create');
     }
@@ -25,7 +32,7 @@ class MenuController extends Controller
         ]);
 
         auth()->user()->menus()->create($data);
-
+		
         return redirect()->route('menus.index')->with('success', 'Menu creato!');
     }
 

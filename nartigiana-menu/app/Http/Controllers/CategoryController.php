@@ -8,14 +8,20 @@ use Illuminate\Http\Request;
 
 class CategoryController extends Controller
 {
-    public function index()
-    {
-        $categories = Category::whereHas('menu', function($q) {
-            $q->where('user_id', auth()->id());
-        })->with('menu')->get();
+    public function index(Request $request)
+	{
+		$query = Category::query()
+			->where('user_id', auth()->id());
 
-        return view('categories.index', compact('categories'));
-    }
+		if ($request->filled('search')) {
+			$search = $request->input('search');
+			$query->where('name', 'like', "%{$search}%");
+		}
+
+		$categories = $query->orderBy('name')->paginate(10)->withQueryString();
+
+		return view('categories.index', compact('categories'));
+	}
 
     public function create()
     {
@@ -35,10 +41,35 @@ class CategoryController extends Controller
             abort(403);
         }
 
-        Category::create($data);
+		$data['user_id'] = auth()->id();
+        
+		Category::create($data);
 
         return redirect()->route('categories.index')->with('success', 'Categoria creata!');
     }
+	
+	/*public function store(Request $request)
+	{
+		$request->validate([
+			'name' => 'required|string|max:255',
+		]);
+
+		// Recupera il menu dell'utente loggato
+		$menu = auth()->user()->menu; // Assumendo che User abbia relazione menu()
+
+		if (!$menu) {
+			return redirect()->back()->withErrors('Nessun menù trovato per questo utente.');
+		}
+
+		Category::create([
+			'name' => $request->input('name'),
+			'user_id' => auth()->id(),
+			'menu_id' => $menu->id,
+		]);
+
+		return redirect()->route('categories.index')->with('success', 'Categoria creata con successo.');
+	}*/
+
 
     public function show(Category $category)
     {

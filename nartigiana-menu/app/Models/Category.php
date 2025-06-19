@@ -12,6 +12,7 @@ class Category extends Model
     protected $fillable = [
         'name',
         'menu_id',
+		'user_id'
     ];
 	
 	public function menu()
