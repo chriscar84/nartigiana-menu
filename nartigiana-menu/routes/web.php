@@ -6,6 +6,13 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\DishController;
 use Illuminate\Support\Facades\Route;
 
+
+//FRONTEND
+Route::get('/menu/{menu}', [\App\Http\Controllers\PublicMenuController::class, 'show'])->name('public.menu');
+//Route::get('/menu/{menu:slug}', [\App\Http\Controllers\PublicMenuController::class, 'show'])->name('public.menu');
+
+
+//BACKEND
 Route::get('/', function () {
     return view('welcome');
 });
@@ -21,9 +28,12 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::middleware(['auth'])->group(function () {
+	Route::get('/menus/import', [MenuController::class, 'showImportForm'])->name('menus.import.form');
+	Route::post('/menus/import', [MenuController::class, 'import'])->name('menus.import');
+	
     Route::resource('menus', MenuController::class);
     Route::resource('categories', CategoryController::class);
     Route::resource('dishes', DishController::class);
+	
 });
-
 require __DIR__.'/auth.php';

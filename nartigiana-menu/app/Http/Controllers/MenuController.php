@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Imports\MenuImport;
 use App\Models\Menu;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class MenuController extends Controller
 {
@@ -29,7 +32,25 @@ class MenuController extends Controller
     {
         $data = $request->validate([
             'title' => 'required|string|max:255',
+            'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+			'slug' => 'nullable|string|max:255|unique:menus,slug'
         ]);
+		
+		$slug = $request->slug ? Str::slug($request->slug) : Str::slug($request->title);
+		
+		// Slug unico automatico
+		$original = $slug;
+		$i = 1;
+		while (Menu::where('slug', $slug)->exists()) {
+			$slug = $original . '-' . $i++;
+		}
+
+		if ($request->hasFile('logo')) {
+			$file = $request->file('logo');
+			$filename = Str::uuid() . '.' . $file->extension();
+			$path = $file->storeAs('logos', $filename, 'public');
+			$data['logo'] = $path;
+		}
 
         auth()->user()->menus()->create($data);
 		
@@ -51,10 +72,30 @@ class MenuController extends Controller
     public function update(Request $request, Menu $menu)
     {
         $this->authorizeMenu($menu);
-
-        $data = $request->validate([
+		
+		$data = $request->validate([
             'title' => 'required|string|max:255',
+            'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+			'slug' => 'nullable|string|max:255|unique:menus,slug'
         ]);
+		        
+		// Slug unico automatico
+		$original = $request->slug;
+		$i = 1;
+		while (Menu::where('slug', $request->slug)->exists()) {
+			$request->slug = $original . '-' . $i++;
+		}
+		
+		if ($request->hasFile('logo') && $menu->logo && Storage::disk('public')->exists($menu->logo)) {
+			Storage::disk('public')->delete($menu->logo);
+		}
+        
+		if ($request->hasFile('logo')) {
+			$file = $request->file('logo');
+			$filename = Str::uuid() . '.' . $file->extension();
+			$path = $file->storeAs('logos', $filename, 'public');
+			$data['logo'] = $path;
+		}
 
         $menu->update($data);
 
@@ -64,7 +105,12 @@ class MenuController extends Controller
     public function destroy(Menu $menu)
     {
         $this->authorizeMenu($menu);
-        $menu->delete();
+        
+		if ($menu->logo && Storage::disk('public')->exists($menu->logo)) {
+			Storage::disk('public')->delete($menu->logo);
+		}
+
+		$menu->delete();
 
         return redirect()->route('menus.index')->with('success', 'Menu eliminato!');
     }
@@ -73,4 +119,49 @@ class MenuController extends Controller
     {
         abort_unless($menu->user_id == auth()->id(), 403);
     }
+
+	function ensureUtf8Encoding(string $filePath): string
+	{
+		$originalContent = file_get_contents($filePath);
+
+		// Tenta di rilevare la codifica originale
+		$encoding = mb_detect_encoding($originalContent, ['UTF-8', 'ISO-8859-1', 'Windows-1252'], true);
+
+		if ($encoding !== 'UTF-8') {
+			// Converte in UTF-8
+			$converted = mb_convert_encoding($originalContent, 'UTF-8', $encoding);
+
+			// Sovrascrive o crea una nuova versione del file
+			$newPath = $filePath . '.utf8.csv';
+			file_put_contents($newPath, $converted);
+
+			return $newPath;
+		}
+
+		return $filePath; // già UTF-8
+	}
+
+	public function import(Request $request, MenuImport $importer)
+	{
+		$request->validate([
+			'file' => ['required', 'file', 'mimes:csv,txt'],
+			'menu_id' => ['required', 'exists:menus,id'],
+		]);
+
+		$path = $request->file('file')->store('imports');
+		$fullPath = Storage::path($path);
+
+		$utf8Path = $this->ensureUtf8Encoding($fullPath);
+
+		$importer->handle($utf8Path, $request->menu_id);
+
+		return redirect()->route('menus.index')->with('success', 'Menu importato con successo!');
+	}
+
+	public function showImportForm()
+	{
+		$menus = Menu::where('user_id', auth()->id())->get();
+
+		return view('menus.import', compact('menus'));
+	}
 }

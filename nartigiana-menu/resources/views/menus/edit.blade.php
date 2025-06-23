@@ -14,11 +14,21 @@
         <div class="max-w-2xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white dark:bg-gray-800 p-6 rounded shadow">
 
-                <form method="POST" action="{{ route('menus.update', $menu) }}">
+                <form method="POST" enctype="multipart/form-data" action="{{ route('menus.update', $menu) }}">
                     @csrf
                     @method('PUT')
 
-                    <!-- Titolo -->
+                    <div class="mb-4">
+						<x-input-label for="logo" :value="__('Logo del Ristorante')" />
+						<x-input id="logo" class="mt-1 block w-full" type="file" name="logo" />
+						@if($menu->logo)
+                            <img src="{{ asset('storage/' . $menu->logo) }}" alt="Logo attuale" class="mt-2 w-32 rounded shadow">
+                        @endif
+						
+						<x-input-error :messages="$errors->get('logo')" class="mt-2" />
+					</div>
+					
+					<!-- Titolo -->
                     <div class="mb-4">
                         <x-input-label for="title" :value="__('Nome del Menù')" />
                         <x-text-input id="title" name="title" type="text"
@@ -26,6 +36,15 @@
                                       :value="old('title', $menu->title)" required autofocus />
                         <x-input-error :messages="$errors->get('title')" class="mt-2" />
                     </div>
+					
+					<div class="mb-4">
+						<label for="slug" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Slug (URL personalizzato)</label>
+						<input type="text" name="slug" id="slug"
+							   value="{{ old('slug', $menu->slug) }}"
+							   class="mt-1 block w-full border-gray-300 rounded-md shadow-sm dark:bg-gray-700 dark:text-white focus:ring-orange-500 focus:border-orange-500">
+						<small class="text-gray-500">Ad esempio: <code>pizzeria-da-gennaro</code></small>
+					</div>
+
 
                     <!-- Pulsanti -->
                     <div class="flex justify-end mt-6">

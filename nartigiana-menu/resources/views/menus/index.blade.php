@@ -4,6 +4,9 @@
             <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
                 {{ __('Menù') }}
             </h2>
+			<a href="{{ route('menus.import.form') }}">
+				<x-primary-button>Importa CSV</x-primary-button>
+			</a>
             <a href="{{ route('menus.create') }}">
                 <x-primary-button>+ Nuovo Menù</x-primary-button>
             </a>
@@ -37,14 +40,24 @@
                     <table class="w-full table-auto text-left">
                         <thead class="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300">
                             <tr>
+                                <th class="px-4 py-2">Immagine</th>
                                 <th class="px-4 py-2">Nome</th>
+                                <th class="px-4 py-2">Slug</th>
                                 <th class="px-4 py-2 text-right">Azioni</th>
                             </tr>
                         </thead>
                         <tbody>
                             @forelse ($menus as $menu)
                                 <tr class="border-b border-gray-200 dark:border-gray-600">
-                                    <td class="px-4 py-2">{{ $menu->title }}</td>
+                                    <td class="px-4 py-2">
+										@if($menu->logo)
+											<img src="{{ asset('storage/' . $menu->logo) }}" alt="{{ $menu->title }}" class="h-16 w-auto rounded">
+										@else
+											<span class="text-gray-400 italic">N/A</span>
+										@endif
+									</td>
+									<td class="px-4 py-2">{{ $menu->title }}</td>
+                                    <td class="px-4 py-2">{{ $menu->slug }}</td>
                                     <td class="px-4 py-2 text-right space-x-2">
                                         <a href="{{ route('menus.edit', $menu) }}" class="text-blue-500 hover:underline">Modifica</a>
                                         <form action="{{ route('menus.destroy', $menu) }}" method="POST" class="inline"

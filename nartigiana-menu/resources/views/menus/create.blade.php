@@ -14,10 +14,16 @@
         <div class="max-w-2xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white dark:bg-gray-800 p-6 rounded shadow">
 
-                <form method="POST" action="{{ route('menus.store') }}">
+                <form method="POST" enctype="multipart/form-data" action="{{ route('menus.store') }}">
                     @csrf
-
-                    <!-- Nome del Menù -->
+					
+					<div class="mb-4">
+						<x-input-label for="logo" :value="__('Logo del Ristorante')" />
+						<x-input id="logo" class="mt-1 block w-full" type="file" name="logo" />
+						<x-input-error :messages="$errors->get('logo')" class="mt-2" />
+					</div>
+					
+					<!-- Nome del Menù -->
                     <div class="mb-4">
                         <x-input-label for="title" :value="__('Nome del Menù')" />
                         <x-text-input id="title" name="title" type="text"
