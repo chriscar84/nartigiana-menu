@@ -38,7 +38,7 @@ class MenuImport
 					Dish::create([
 						'name'        => trim($row['name']),
 						'description' => trim($row['description'] ?? ''),
-						'price'       => floatval($row['price']),
+						'price'       => floatval($row['price']/100),
 						'category_id' => $category->id,
 						'user_id'     => auth()->id(),
 					]);

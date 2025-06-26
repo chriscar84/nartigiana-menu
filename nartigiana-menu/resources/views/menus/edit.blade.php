@@ -38,11 +38,45 @@
                     </div>
 					
 					<div class="mb-4">
-						<label for="slug" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Slug (URL personalizzato)</label>
-						<input type="text" name="slug" id="slug"
+						<x-input-label class="block text-sm font-medium text-gray-700 dark:text-gray-300" :value="__('Url personalizzato')" />
+						<x-text-input type="text" name="slug" id="slug"
 							   value="{{ old('slug', $menu->slug) }}"
-							   class="mt-1 block w-full border-gray-300 rounded-md shadow-sm dark:bg-gray-700 dark:text-white focus:ring-orange-500 focus:border-orange-500">
+							   class="mt-1 block w-full border-gray-300 rounded-md shadow-sm dark:bg-gray-700 dark:text-white focus:ring-orange-500 focus:border-orange-500" />
 						<small class="text-gray-500">Ad esempio: <code>pizzeria-da-gennaro</code></small>
+					</div>
+				
+					<div class="mb-4">
+						<x-input-label for="background_color" class="block font-medium text-gray-700" :value="__('Colore di Sfondo')" />
+						<x-input type="color" name="background_color" id="background_color" 
+							   value="{{ old('background_color', $menu->background_color ?? '#ff6600') }}"
+							   class="mt-1 block w-16 h-10 p-0 border-none rounded cursor-pointer" />
+					</div>
+
+					<div class="mb-4">
+						<x-input-label for="background_image" :value="__('Background')" />
+						<x-input id="background_image" class="mt-1 block w-full" type="file" name="background_image" />
+						@if($menu->background_image)
+                            <img src="{{ asset('storage/' . $menu->background_image) }}" alt="Background" class="mt-2 w-32 rounded shadow" />
+							<!-- Bottone per eliminare immagine di sfondo -->
+							<button
+								type="submit"
+								name="delete_background_image"
+								value="1"
+								class="mt-2 inline-block px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700"
+								onclick="return confirm('Sei sicuro di voler eliminare l\'immagine di sfondo?')"
+							>
+								Elimina immagine di sfondo
+							</button>
+                        @endif
+						
+						<x-input-error :messages="$errors->get('background_image')" class="mt-2" />
+					</div>
+					
+					<div class="mb-4">
+						<x-input-label for="primary_color" class="block font-medium text-gray-700" :value="__('Colore primario')" />
+						<x-input type="color" name="primary_color" id="primary_color" 
+							   value="{{ old('primary_color', $menu->primary_color ?? '#ff6600') }}"
+							   class="mt-1 block w-16 h-10 p-0 border-none rounded cursor-pointer" />
 					</div>
 
 

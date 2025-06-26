@@ -14,6 +14,9 @@ class Menu extends Model
         'title',
         'logo',
         'slug',
+        'background_color',
+        'background_image',
+        'primary_color',
         'user_id'
     ];
 	

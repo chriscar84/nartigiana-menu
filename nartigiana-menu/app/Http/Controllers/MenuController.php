@@ -33,7 +33,10 @@ class MenuController extends Controller
         $data = $request->validate([
             'title' => 'required|string|max:255',
             'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-			'slug' => 'nullable|string|max:255|unique:menus,slug'
+			'slug' => 'nullable|string|max:255|unique:menus,slug',
+			'background_color' => 'nullable|string',
+			'primary_color' => 'nullable|string',
+			'background_image' => 'nullable|image|max:2048'
         ]);
 		
 		$slug = $request->slug ? Str::slug($request->slug) : Str::slug($request->title);
@@ -50,6 +53,13 @@ class MenuController extends Controller
 			$filename = Str::uuid() . '.' . $file->extension();
 			$path = $file->storeAs('logos', $filename, 'public');
 			$data['logo'] = $path;
+		}
+		
+		if ($request->hasFile('background_image')) {
+			$file = $request->file('background_image');
+			$filename = Str::uuid() . '.' . $file->extension();
+			$path = $file->storeAs('backgrounds', $filename, 'public');
+			$data['background_image'] = $path;
 		}
 
         auth()->user()->menus()->create($data);
@@ -73,30 +83,56 @@ class MenuController extends Controller
     {
         $this->authorizeMenu($menu);
 		
+		if ($request->has('delete_background_image')) {
+			if ($menu->background_image && Storage::disk('public')->exists($menu->background_image)) {
+				Storage::disk('public')->delete($menu->background_image);
+			}
+			$menu->background_image = null;
+			$menu->save();
+
+			return redirect()->back()->with('success', 'Immagine di sfondo eliminata!');
+		}
+		
 		$data = $request->validate([
             'title' => 'required|string|max:255',
             'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-			'slug' => 'nullable|string|max:255|unique:menus,slug'
+			'slug' => 'nullable|string|max:255|unique:menus,slug,' . $menu->id,
+			'background_color' => 'nullable|string',
+			'primary_color' => 'nullable|string',
+			'background_image' => 'nullable|image|max:2048'
         ]);
 		        
-		// Slug unico automatico
-		$original = $request->slug;
-		$i = 1;
-		while (Menu::where('slug', $request->slug)->exists()) {
-			$request->slug = $original . '-' . $i++;
+		if ($request->filled('slug') && $request->slug !== $menu->slug) {
+			$original = Str::slug($request->slug);
+			$slug = $original;
+			$i = 1;
+			while (Menu::where('slug', $slug)->where('id', '!=', $menu->id)->exists()) {
+				$slug = $original . '-' . $i++;
+			}
+			$data['slug'] = $slug;
 		}
 		
-		if ($request->hasFile('logo') && $menu->logo && Storage::disk('public')->exists($menu->logo)) {
-			Storage::disk('public')->delete($menu->logo);
-		}
-        
 		if ($request->hasFile('logo')) {
+			if ($menu->logo && Storage::disk('public')->exists($menu->logo)) {
+				Storage::disk('public')->delete($menu->logo);
+			}
+       
 			$file = $request->file('logo');
 			$filename = Str::uuid() . '.' . $file->extension();
 			$path = $file->storeAs('logos', $filename, 'public');
 			$data['logo'] = $path;
 		}
 
+		if ($request->hasFile('background_image')) {
+			if ($menu->background_image && Storage::disk('public')->exists($menu->background_image)) {
+				Storage::disk('public')->delete($menu->background_image);
+			}
+
+			$file = $request->file('background_image');
+			$filename = Str::uuid() . '.' . $file->extension();
+			$path = $file->storeAs('backgrounds', $filename, 'public');
+			$data['background_image'] = $path;
+		}
         $menu->update($data);
 
         return redirect()->route('menus.index')->with('success', 'Menu aggiornato!');

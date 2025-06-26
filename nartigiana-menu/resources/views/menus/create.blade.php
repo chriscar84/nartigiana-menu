@@ -32,6 +32,26 @@
                         <x-input-error :messages="$errors->get('title')" class="mt-2" />
                     </div>
 
+					<div class="mb-4">
+						<x-input-label for="background_color" class="block font-medium text-gray-700" :value="__('Colore di Sfondo')" />
+						<x-input type="color" name="background_color" id="background_color" 
+							   value=""
+							   class="mt-1 block w-16 h-10 p-0 border-none rounded cursor-pointer" />
+					</div>
+
+					<div class="mb-4">
+						<x-input-label for="background_image" :value="__('Background')" />
+						<x-input id="background_image" class="mt-1 block w-full" type="file" name="background_image" />
+						<x-input-error :messages="$errors->get('background_image')" class="mt-2" />
+					</div>
+					
+					<div class="mb-4">
+						<x-input-label for="primary_color" class="block font-medium text-gray-700" :value="__('Colore primario')" />
+						<x-input type="color" name="primary_color" id="primary_color" 
+							   value=""
+							   class="mt-1 block w-16 h-10 p-0 border-none rounded cursor-pointer" />
+					</div>
+
                     <!-- Pulsante -->
                     <div class="flex justify-end mt-6">
                         <x-primary-button>

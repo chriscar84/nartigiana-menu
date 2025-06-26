@@ -8,8 +8,8 @@ use Illuminate\Support\Facades\Route;
 
 
 //FRONTEND
-Route::get('/menu/{menu}', [\App\Http\Controllers\PublicMenuController::class, 'show'])->name('public.menu');
-//Route::get('/menu/{menu:slug}', [\App\Http\Controllers\PublicMenuController::class, 'show'])->name('public.menu');
+//Route::get('/menu/{menu}', [\App\Http\Controllers\PublicMenuController::class, 'show'])->name('public.menu');
+Route::get('/menu/{menu:slug}', [\App\Http\Controllers\PublicMenuController::class, 'show'])->name('public.menu');
 
 
 //BACKEND

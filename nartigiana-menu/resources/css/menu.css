@@ -1,0 +1,129 @@
+html, body {
+	height: 100%;
+	background-size: cover !important;
+	background-attachment: fixed !important;
+	background-position: center center !important;
+	background-repeat: no-repeat !important;
+}
+
+.category-header {
+	background-color: #FFEDD5;
+	padding: 10px 15px;
+	border-radius: 8px;
+	margin-bottom: 5px;
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	font-weight: 700;
+	font-size: 1.25rem;
+	color: #C2410C;
+	cursor: pointer;
+	user-select: none;
+}
+.dish-card {
+	display: flex;
+	background: white;
+	border-radius: 10px;
+	box-shadow: 0 4px 12px rgb(0 0 0 / 0.1);
+	margin-bottom: 15px;
+	padding: 15px;
+	align-items: center;
+	gap: 15px;
+	transition: box-shadow 0.3s ease;
+}
+.dish-card:hover {
+	box-shadow: 0 6px 16px rgb(0 0 0 / 0.15);
+}
+.dish-photo {
+	flex-shrink: 0;
+	width: 90px;
+	height: 90px;
+	border-radius: 10px;
+	overflow: hidden;
+	background: #f9fafb;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+.dish-photo img {
+	max-width: 100%;
+	max-height: 100%;
+	object-fit: cover;
+}
+.dish-info {
+	flex-grow: 1;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+}
+.dish-name {
+	font-weight: 600;
+	font-size: 1.1rem;
+	margin-bottom: 5px;
+	color: #333;
+}
+.dish-desc {
+	font-size: 0.9rem;
+	color: #666;
+	margin-bottom: 8px;
+}
+.dish-price {
+	font-weight: 700;
+	font-size: 1rem;
+	color: #d97706;
+	white-space: nowrap;
+}
+
+.promo-banner {
+	background-color: #fff7ed;
+	border: 1px solid #f4e1d2;
+	border-radius: 12px;
+	overflow: hidden;
+	margin: 1rem 0;
+	box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.promo-image {
+	width: 100%;
+	height: auto;
+	display: block;
+}
+
+.promo-content {
+	text-align: center;
+	padding: 1rem;
+}
+
+.promo-logo {
+	height: 50px;
+	margin: 0.5rem auto;
+}
+
+.promo-content h3 {
+	margin: 0;
+	color: #e67e22;
+	font-size: 1.4rem;
+}
+
+.promo-content p {
+	margin: 0.3rem 0 0;
+	color: #555;
+	font-size: 0.95rem;
+}
+
+.category-icon {
+	width: 28px;
+	height: 28px;
+	fill: #c2410c;
+}
+/* Freccia rotante */
+.arrow {
+	transition: transform 0.3s ease;
+	margin-left: auto;
+	width: 20px;
+	height: 20px;
+	stroke: #c2410c;
+}
+.arrow.open {
+	transform: rotate(90deg);
+}

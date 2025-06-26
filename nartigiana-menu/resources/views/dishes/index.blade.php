@@ -71,14 +71,22 @@
                                     <td class="px-4 py-2">{{ $dish->name }}</td>
                                     <td class="px-4 py-2">{{ $dish->price }}</td>
                                     <td class="px-4 py-2 space-x-2">
-                                        <a href="{{ route('dishes.edit', $dish) }}" class="text-blue-500 hover:underline">Modifica</a>
-                                        <form action="{{ route('dishes.destroy', $dish) }}" method="POST" class="inline"
-                                              onsubmit="return confirm('Sei sicuro di voler eliminare questo piatto?')">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="text-red-500 hover:underline">Elimina</button>
-                                        </form>
-                                    </td>
+										@if (!Str::contains(strtolower($dish->name), "n'artigiana"))
+											<a href="{{ route('dishes.edit', $dish) }}" class="text-blue-500 hover:underline"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+		<path stroke-linecap="round" stroke-linejoin="round" d="M11 5h7m-7 0l-7 7v5a2 2 0 002 2h5l7-7M16 3l5 5-7 7-5-5 7-7z" />
+	  </svg>
+	  <span>Modifica</span></a>
+											<form action="{{ route('dishes.destroy', $dish) }}" method="POST" class="inline"
+												  onsubmit="return confirm('Sei sicuro di voler eliminare questo piatto?')">
+												@csrf
+												@method('DELETE')
+												<button type="submit" class="text-red-500 hover:underline"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+		<path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5-4h4m-4 0a1 1 0 00-1 1v1h6V4a1 1 0 00-1-1m-4 0h4" />
+	  </svg>
+	  <span>Elimina</span></button>
+											</form>
+										@endif
+									</td>
                                 </tr>
                             @empty
                                 <tr>
